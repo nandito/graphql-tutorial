@@ -1,68 +1,26 @@
 import React, { Component } from 'react'
 import {
   ApolloClient,
-  gql,
-  graphql,
   ApolloProvider,
+  createNetworkInterface
 } from 'react-apollo'
-import {
-  makeExecutableSchema,
-  addMockFunctionsToSchema
-} from 'graphql-tools'
-import { mockNetworkInterfaceWithSchema } from 'apollo-test-utils'
-import logo from './logo.svg'
 import './App.css'
-import { typeDefs } from './schema'
+import ChannelsListWithData from './components/ChannelsListWithData'
 
-const schema = makeExecutableSchema({ typeDefs })
-addMockFunctionsToSchema({ schema })
-
-const mockNetworkInterface = mockNetworkInterfaceWithSchema({ schema })
-
-const client = new ApolloClient({
-   networkInterface: mockNetworkInterface,
+const networkInterface = createNetworkInterface({
+  uri: 'http://localhost:4000/graphql'
 })
 
-const ChannelsList = ({ data: {loading, error, channels }}) => {
-  if (loading) {
-    return (
-      <p>Loading...</p>
-    )
-  }
-
-  if (error) {
-    return (
-      <p>{error.message}</p>
-    )
-  }
-
-  return (
-    <ul>
-      { channels.map(ch => <li key={ch.id}>{ch.name}</li>) }
-    </ul>
-  )
-}
-
-const ChannelsListQuery = gql`
-  query ChannelsListQuery {
-    channels {
-      id
-      name
-    }
-  }
-`
-
-const ChannelsListWithData = graphql(ChannelsListQuery)(ChannelsList)
+const client = new ApolloClient({
+   networkInterface: networkInterface,
+})
 
 class App extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
         <div className="App">
-          <div className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>Welcome to Apollo</h2>
-          </div>
+          <div className="navbar">React + GraphQL Tutorial</div>
           <ChannelsListWithData />
         </div>
       </ApolloProvider>
